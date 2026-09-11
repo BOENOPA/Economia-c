@@ -72,25 +72,35 @@ class EconomyBot(commands.Bot):
 
     async def setup_hook(self):
 
-        try:
-            await self.load_extension("cogs.economia")
-            print("✅ Cog de economía cargado.")
-        except Exception:
-            print("❌ Error cargando economía:")
-            traceback.print_exc()
+    # ========================================================
+    # CARGAR TODOS LOS COGS
+    # ========================================================
 
-        # Sincronización solamente en el servidor configurado.
-        # Esto hace que los slash commands aparezcan rápidamente.
-        try:
-            guild = discord.Object(id=GUILD_ID)
+    for filename in os.listdir("./cogs"):
+        if filename.endswith(".py") and not filename.startswith("_"):
+            extension = f"cogs.{filename[:-3]}"
 
-            self.tree.copy_global_to(guild=guild)
-            synced = await self.tree.sync(guild=guild)
+            try:
+                await self.load_extension(extension)
+                print(f"✅ Cog cargado: {extension}")
+            except Exception:
+                print(f"❌ Error cargando: {extension}")
+                traceback.print_exc()
 
-            print(f"✅ {len(synced)} comandos sincronizados.")
-        except Exception:
-            print("❌ Error sincronizando comandos:")
-            traceback.print_exc()
+    # ========================================================
+    # SINCRONIZAR SLASH COMMANDS
+    # ========================================================
+
+    try:
+        guild = discord.Object(id=GUILD_ID)
+
+        self.tree.copy_global_to(guild=guild)
+        synced = await self.tree.sync(guild=guild)
+
+        print(f"✅ {len(synced)} comandos sincronizados.")
+    except Exception:
+        print("❌ Error sincronizando comandos:")
+        traceback.print_exc()
 
     async def on_ready(self):
 
@@ -103,7 +113,7 @@ class EconomyBot(commands.Bot):
         await self.change_presence(
             status=discord.Status.online,
             activity=discord.Game(
-                name="💰 Economía"
+                name="/chikibeibys 💰"
             )
         )
 
