@@ -148,6 +148,90 @@ class Economia(commands.Cog):
         print(
             "✅ Cog de economía cargado correctamente."
         )
+     
+    class Economia(commands.Cog):
+
+    def __init__(self, bot):
+        self.bot = bot
+        self.data = load_data()
+
+        print(
+            "✅ Cog de economía cargado correctamente."
+        )
+
+    # ============================================================
+    # DAR DINERO A UN ROL
+    # ============================================================
+
+    @app_commands.command(
+        name="give-role-money",
+        description="Da dinero a todos los miembros que tengan un rol."
+    )
+    @app_commands.describe(
+        rol="Rol cuyos miembros recibirán el dinero.",
+        cantidad="Cantidad de dinero para cada miembro."
+    )
+    @app_commands.checks.has_permissions(administrator=True)
+    async def give_role_money(
+        self,
+        interaction: discord.Interaction,
+        rol: discord.Role,
+        cantidad: int
+    ):
+        if cantidad <= 0:
+            return await interaction.response.send_message(
+                "❌ La cantidad debe ser mayor que **$0**.",
+                ephemeral=True
+            )
+
+        if rol.is_default():
+            return await interaction.response.send_message(
+                "❌ No podés seleccionar `@everyone`.",
+                ephemeral=True
+            )
+
+        await interaction.response.defer()
+
+        count = 0
+        total = 0
+
+        for member in rol.members:
+
+            if member.bot:
+                continue
+
+            user = self.get_user_data(
+                interaction.guild.id,
+                member.id
+            )
+
+            user["cash"] += cantidad
+            user["stats"]["money_earned"] += cantidad
+
+            count += 1
+            total += cantidad
+
+        self.save_data(self.data)
+
+        embed = discord.Embed(
+            title="💰 Dinero entregado",
+            description=(
+                f"Se entregaron **${cantidad:,}** a cada miembro "
+                f"con el rol {rol.mention}.\n\n"
+                f"👥 **Miembros:** `{count}`\n"
+                f"💵 **Por persona:** `${cantidad:,}`\n"
+                f"💰 **Total entregado:** `${total:,}`"
+            ).replace(",", "."),
+            color=PURPLE
+        )
+
+        embed.set_footer(
+            text=f"Ejecutado por {interaction.user.display_name}"
+        )
+
+        await interaction.followup.send(
+            embed=embed
+        )
 
     # ========================================================
     # GUILD
