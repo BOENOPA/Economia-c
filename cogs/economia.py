@@ -15,7 +15,7 @@ from discord.ext import commands
 # ============================================================
 
 DATA_DIR = Path("data")
-DATA_DIR.mkdir(exist_ok=True)
+DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 DATA_FILE = DATA_DIR / "economia.json"
 
