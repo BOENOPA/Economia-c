@@ -86,7 +86,6 @@ class EconomyBot(commands.Bot):
         cogs = [
             ("cogs.economia", "economía"),
             ("cogs.blackjack", "Blackjack"),
-            ("cogs.addmoney", "administración de dinero"),
             ("cogs.help", "ayuda")
         ]
 
